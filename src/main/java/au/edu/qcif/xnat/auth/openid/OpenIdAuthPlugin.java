@@ -65,7 +65,7 @@ import java.util.*;
  *
  * @author <a href='https://github.com/shilob'>Shilo Banihit</a>
  */
-@XnatPlugin(value = "xnat-openid-auth-plugin", name = "XNAT OpenID Authentication Provider Plugin")
+@XnatPlugin(value = "xnat-openid-auth-plugin", name = "XNAT OpenID Authentication Provider Plugin", log4jPropertiesFile ="/META-INF/resources/openid-log4j.properties")
 @EnableOAuth2Client
 @Component
 @Slf4j
@@ -84,7 +84,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
                 return buildProtectedResourceDetails(properties);
             }
         });
-        _enabledOpenIdProviders = new ArrayList<>(Sets.intersection(_providerProperties.keySet(), new HashSet<>(preferences.getEnabledProviders())));
+        _enabledOpenIdProviders = new ArrayList<>(Sets.union(_providerProperties.keySet(), new HashSet<>(preferences.getEnabledProviders())));
 
         LOGIN_DISPLAY = _enabledOpenIdProviders.isEmpty() ? "" : StringUtils.join(Iterables.filter(Lists.transform(_enabledOpenIdProviders, new Function<String, String>() {
             @Nullable
@@ -194,7 +194,7 @@ public class OpenIdAuthPlugin implements XnatSecurityExtension {
         final String   preEstablishedUri = getOpenIdUri();
         final String[] scopes            = properties.getProperty("scopes").split(",");
 
-        log.debug("Creating protected resource details of provider: {}\nid: {}\nclientId: {}\nclientSecret: {}\naccessTokenUri: {}\nuserAuthUri: {}\ntokenName: {}\npreEstablishedUri: {}\nscopes: {}", providerId, clientId, clientSecret, accessTokenUri, userAuthUri, tokenName, preEstablishedUri, scopes);
+        log.debug("Creating protected resource details of provider: {}\nid: {}\nclientId: {}\nclientSecret: {}\naccessTokenUri: {}\nuserAuthUri: {}\ntokenName: {}\npreEstablishedUri: {}\nscopes: {}", providerId, clientId, clientId, clientSecret, accessTokenUri, userAuthUri, tokenName, preEstablishedUri, scopes);
 
         final BaseOAuth2ProtectedResourceDetails details = getResourceDetailsByGrantType(providerId, grantType);
         details.setId(providerId);
